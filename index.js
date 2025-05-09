@@ -12,21 +12,22 @@ app.post("/generate", async (req, res) => {
 
   try {
     const response = await axios.post(
-      "https://api.openai.com/v1/completions",
+      "https://api.openai.com/v1/chat/completions",
       {
-        model: "text-davinci-003",
-        prompt,
-        max_tokens: 100
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: prompt }]
       },
       {
         headers: {
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+          "Content-Type": "application/json"
         }
       }
     );
 
-    res.json({ result: response.data.choices[0].text });
+    res.json({ result: response.data.choices[0].message.content });
   } catch (error) {
+    console.error("OpenAI error:", error.message);
     res.status(500).json({ error: "Failed to call OpenAI" });
   }
 });
